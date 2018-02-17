@@ -55,7 +55,8 @@ def otu():
 
 
 def sample_to_dict(sample_id, column_list):
-    sample = samples_df[samples_df['SAMPLEID'] == int(sample)]
+    samples_df = pd.read_csv('DataSets/Belly_Button_Biodiversity_Metadata.csv')
+    sample = samples_df[samples_df['SAMPLEID'] == int(sample_id)]
     json_keys = column_list
     sample_filtered_cols = sample[json_keys]
     final_sample_dict = sample_filtered_cols.to_dict(orient='index')[0]
@@ -79,7 +80,6 @@ Returns a json dictionary of sample metadata in the format
 """
 @app.route('/metadata/<sample>')
 def metadata(sample):
-    samples_df = pd.read_csv('DataSets/Belly_Button_Biodiversity_Metadata.csv')
     json_keys = ['AGE', 'BBTYPE', 'ETHNICITY', 'GENDER', 'LOCATION', 'SAMPLEID']
     final_sample_dict = sample_to_dict(sample, json_keys)
     return jsonify(final_sample_dict)
@@ -98,7 +98,6 @@ Returns an integer value for the weekly washing frequency `WFREQ`
 """
 @app.route('/wfreq/<sample>')
 def wfreq(sample):
-    samples_df = pd.read_csv('DataSets/Belly_Button_Biodiversity_Metadata.csv')
     json_keys = ['WFREQ']
     final_sample_dict = sample_to_dict(sample, json_keys)
     return jsonify(final_sample_dict)
@@ -144,4 +143,4 @@ def samples(sample):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
