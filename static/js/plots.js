@@ -28,7 +28,6 @@ function getMonthlData() {
       var lowPrices = unpack(response.dataset.data, 3);
       var closingPrices = unpack(response.dataset.data, 4);
       var volume = unpack(response.dataset.data, 5);
-      buildTable(dates, openPrices, highPrices, lowPrices, closingPrices, volume);
     });
 }
 
@@ -42,21 +41,7 @@ var austin_weather = [
 ]
 // YOUR CODE HERE
 
-function buildTable(dates, openPrices, highPrices, lowPrices, closingPrices, volume) {
 
-  d3.select("tbody")
-      .selectAll("li") // dont know if this is necesssary
-      .enter()
-      .append("tr")
-      .html(function(d) {
-        return `<td> ${dates} </td>
-          <td> ${openPrices} </td>
-          <td> ${highPrices} </td>
-          <td> ${lowPrices} </td>
-          <td> ${closingPrices} </td>
-          <td> ${volume} </td>`;
-      });
-}
 
 function buildPlot() {
   var url = `https://www.quandl.com/api/v3/datasets/WIKI/AMZN.json?start_date=2016-10-01&end_date=2017-10-01&api_key=${apiKey}`;
@@ -114,7 +99,7 @@ function buildPlot() {
       showlegend: false
     };
 
-    Plotly.newPlot("plot", data, layout);
+    Plotly.newPlot("pie-chart", data, layout);
 
   });
 }
@@ -123,3 +108,97 @@ buildPlot();
 
 // BONUS - Dynamically add the current date to the report header
 // YOUR CODE HERE
+
+/* data route */
+function washFreqGauge(sampleID) {
+
+  // Wash Freq Gauge
+  var washFreqURL = `https://bellybuttons.herokuapp.com/wfreq/${sampleID}`;
+  console.log(washFreqURL);
+  Plotly.d3.json(washFreqURL, function (error, wfreqData) {
+      var wfreq = wfreqData.WFREQ;
+      console.log(wfreq);
+      plotWashFreq(wfreq);
+  });
+  // end Guage plot Data
+
+
+}
+washFreqGauge("940")
+function plotWashFreq(wfreq) {
+
+    // Enter a speed between 0 and 180
+    var level0 = wfreq;
+    var level = level0 * 18
+
+    // Trig to calc meter point
+    var degrees = 180 - level,
+        radius = .5;
+    var radians = degrees * Math.PI / 180;
+    var x = radius * Math.cos(radians);
+    var y = radius * Math.sin(radians);
+
+    // Path: may have to change to create a better triangle
+    var mainPath = 'M -.0 -0.025 L .0 0.025 L ',
+        pathX = String(x),
+        space = ' ',
+        pathY = String(y),
+        pathEnd = ' Z';
+    var path = mainPath.concat(pathX, space, pathY, pathEnd);
+
+    var data = [{
+        type: 'scatter',
+        x: [0], y: [0],
+        marker: { size: 14, color: '850000' },
+        showlegend: false,
+        name: 'Washing Frequency',
+        text: level0,
+        hoverinfo: 'text+name'
+    },
+    {
+        values: [50 / 5, 50 / 5, 50 / 5, 50 / 5, 50 / 5, 50],
+        rotation: 90,
+        text: ['VERY HIGH!', 'High', 'Average', 'Low',
+            'VERY LOW!'],
+        textinfo: 'text',
+        textposition: 'inside',
+        marker: {
+            colors: ['rgba(rgba(0, 255, 0, .75)',
+                'rgba(200, 255, 150, .75)', 'rgba(255, 255, 42, .75)',
+                'rgba(255, 140, 0, .75)', 'rgba(255, 0, 0, .75)',
+                'rgba(255, 255, 255, 0)']
+        },
+        labels: ['more than 9', 'more than 6 to 8', 'more than 4 to 6', 'more than 2 to 4', '0 to 2', ''],
+        hoverinfo: 'label',
+        hole: .5,
+        type: 'pie',
+        showlegend: false
+    }];
+
+    var layout = {
+        shapes: [{
+            type: 'path',
+            path: path,
+            fillcolor: '850000',
+            line: {
+                color: '850000'
+            }
+        }],
+        title: '<b>Belly Button Washing Frequency</b> <br> Frequency 0-10 times/week ',
+        height: 400,
+        width: 400,
+        xaxis: {
+            zeroline: false, showticklabels: false,
+            showgrid: false, range: [-1, 1]
+        },
+        yaxis: {
+            zeroline: false, showticklabels: false,
+            showgrid: false, range: [-1, 1]
+        }
+    };
+
+    Plotly.newPlot('wash-gauge', data, layout);
+
+
+
+};
