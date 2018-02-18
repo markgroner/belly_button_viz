@@ -113,7 +113,7 @@ buildPlot();
 function washFreqGauge(sampleID) {
 
   // Wash Freq Gauge
-  var washFreqURL = `https://bellybuttons.herokuapp.com/wfreq/${sampleID}`;
+  var washFreqURL = `/wfreq/${sampleID}`;
   console.log(washFreqURL);
   Plotly.d3.json(washFreqURL, function (error, wfreqData) {
       var wfreq = wfreqData.WFREQ;
