@@ -135,6 +135,7 @@ def samples(sample):
     samples_df = pd.read_csv('DataSets/belly_button_biodiversity_samples.csv')
     sample_filtered = samples_df[['otu_id', sample]]
     sample_sorted = sample_filtered.sort_values(sample, ascending=False)
+    sample_sorted = sample_sorted.head(10)
     otu_ids = sample_sorted['otu_id'].tolist()
     sample_values = sample_sorted[sample].tolist()
     json = [{'otu_ids': otu_ids}, {'sample_values': sample_values}]
