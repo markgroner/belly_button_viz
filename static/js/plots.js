@@ -41,7 +41,7 @@ function pieChart(sampleID) {
 }
 
 
-pieChart('BB_940')
+plotPie(sampleData)
 
 function plotPie(sampleData) {
   var values = sampleData[1]['sample_values'];
